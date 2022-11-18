@@ -1,7 +1,7 @@
 from selenium import webdriver
 import warnings
 import time
-from  _remove_CT import _remove_ct
+from  __remove_CT import __remove_ct
 import paths as path
 
 warnings.filterwarnings("ignore",category=DeprecationWarning)
@@ -59,7 +59,7 @@ class eMille():
     
     def remove_cycle_time_tags(self,coletor_name,mttq_topic,config_name,backup = True):
 
-        _remove_ct(self._driver,coletor_name,mttq_topic,config_name,backup)
+        __remove_ct(self._driver,coletor_name,mttq_topic,config_name,backup)
 
 
     def remove_cylinder_tags(self):
