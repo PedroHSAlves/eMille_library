@@ -5,7 +5,7 @@ from warnings import warn
 from selenium.webdriver.common.action_chains import ActionChains
 import pandas as pd
 
-class _remove_ct():
+class remove_ct():
     def __init__(self,driver : webdriver.Chrome,coletor_name,mttq_topic,config_name,backup):
         self._COLETOR_NAME = coletor_name
         self._MTTQ_TOPIC = mttq_topic
@@ -14,6 +14,8 @@ class _remove_ct():
         self._driver = driver
         self._counter = 0
         self._quantity_tags = 0
+        self._action = ActionChains(self._driver)
+        self._table_values = [[],[],[]] # [column,value,ordered value]
 
         self.__configuration_screen()
     
@@ -40,28 +42,34 @@ class _remove_ct():
 
         element = self._driver.find_element_by_class_name("MuiButton-textPrimary")
         element.click()
-        time.sleep(6) #website response time
+        time.sleep(5) #website response time
 
         self.__len_tags
+        self.__main()
     
     @property
     def __len_tags(self):
         """
         Returns the number of visible tags in the configuration page
         """
-        element = self._driver.find_element_by_css_selector("td > button.MuiButtonBase-root.MuiIconButton-root")
+        
+        element = self._driver.find_elements_by_css_selector("td > button.MuiButtonBase-root.MuiIconButton-root")
         self._quantity_tags = len(element)
 
+        # print(element, end="\n\n")
+        # print(type(element))
+        # print(len(element))
         print(f"\nThere are {self._quantity_tags} data to be excluded")
         print(f"Have already been excluded {self._counter}")
 
-    def _main(self):
+    def __main(self):
         """
         """
+
         while self._quantity_tags > 0:
             try:
                 element = self._driver.find_element_by_css_selector("td > button.MuiButtonBase-root.MuiIconButton-root")
-                element[0].click()
+                self._action.move_to_element(element).click().perform()
                 time.sleep(2) #website response time
 
                 if self._backup:
@@ -72,7 +80,7 @@ class _remove_ct():
                 self._counter += 1
                 self.__len_tags
             except:
-                warn(f'Error expanding line information {self._counter}')
+                 warn(f'Error expanding line information {self._counter}')
         
         self.__len_tags
 
@@ -94,10 +102,8 @@ class _remove_ct():
             element[0].click()
             time.sleep(1) #website response time
 
-            action = ActionChains(self._driver)
-
             remove_button = self._driver.find_elements_by_css_selector("span.MuiTypography-root.MuiListItemText-primary.MuiTypography-body1.MuiTypography-displayBlock")
-            action.move_to_element(remove_button[2]).click().perform()
+            self._action.move_to_element(remove_button[2]).click().perform()
 
             print("\n Item successfully removed")
         except:
@@ -106,7 +112,7 @@ class _remove_ct():
         time.sleep(1) #website response time
 
         element = self._driver.find_element_by_xpath("/html/body/div[1]/div/main/div[1]/p")
-        action.move_to_element(element).click().perform()
+        self._action.move_to_element(element).click().perform()
         time.sleep(5) #website response time
 
     def __recover_data(self):
@@ -114,20 +120,103 @@ class _remove_ct():
 
         index = 0
         counter = 1
-        self._table_name = []
-        self._table_value = []
 
-        self._table_name.insert(11,'Node')
-        self._table_value.insert(11, self._driver.find_element_by_xpath("/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[1]/td[5]").get_attribute("value"))
+        self._table_values[0].append('Node')
+        self._table_values[0].append('Send')
+        self._table_values[0].append('Coletor')
+        
+        self._table_values[1].append(self._driver.find_element_by_xpath("/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[1]/td[5]").get_attribute("value"))
+        self._table_values[1].append(-1)
+        self._table_values[1].append(self._COLETOR_NAME)
 
-        for index in range(11):
-            self._table_name.append(self._driver.find_element_by_xpath(f"/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[2]/td/div/div/div/div[2]/div/div/div/table/tbody/tr[{counter}]/td[1]").get_attribute("value"))
+        for index in range(9):
+            self._table_values[0].append(self._driver.find_element_by_xpath(f"/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[2]/td/div/div/div/div[2]/div/div/div/table/tbody/tr[{counter}]/td[1]").get_attribute("value"))
 
             if index < 2:
-                self._table_value.append(self._driver.find_element_by_xpath(f"/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[2]/td/div/div/div/div[2]/div/div/div/table/tbody/tr[{counter}]/td[2]").get_attribute("value")) 
+                self._table_values[1].append(self._driver.find_element_by_xpath(f"/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[2]/td/div/div/div/div[2]/div/div/div/table/tbody/tr[{counter}]/td[2]").get_attribute("value")) 
             else:
-                self._table_value.append(self._driver.find_element_by_xpath(f"/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[2]/td/div/div/div/div[2]/div/div/div/table/tbody/tr[{counter}]/td[2]").get_attribute("value"))
+                self._table_values[1].append(self._driver.find_element_by_xpath(f"/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[2]/td/div/div/div/div[2]/div/div/div/table/tbody/tr[{counter}]/td[2]").get_attribute("value"))
             counter += 1
 
-            #armazenar dados
-            self.__remove_element()
+        self.__store_data()
+        self.__remove_element()
+    
+    def __store_data(self):
+        try:
+
+            for column in self._table_values[0]:
+
+                if column == self._df.columns[0]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])
+
+                elif column == self._df.columns[1]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])
+
+                elif column == self._df.columns[2]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])
+
+                elif column == self._df.columns[3]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])
+
+                elif column == self._df.columns[4]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])
+
+                elif column == self._df.columns[5]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index]) 
+
+                elif column == self._df.columns[6]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])  
+
+                elif column == self._df.columns[7]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])  
+
+                elif column == self._df.columns[8]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])  
+
+                elif column == self._df.columns[9]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])   
+
+                elif column == self._df.columns[10]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index]) 
+
+                elif column == self._df.columns[11]:
+                    index = self._table_values[0].index(column)
+                    self._table_values[2].append(self._table_values[1][index])                                                                                     
+
+            self._df.loc[len(self._df)] = self._table_values[2]
+            print(self._df)
+
+            # self._table_values[1].append("name")
+            # self._table_values[1].append(-1)
+            # self._df.loc[len(self._df)] = self._table_value
+            # print(self._df)
+            # self._df['Shop'][self._counter] = self._table_value[self._table_values[0].index('Shop')]
+            # self._df['Line'][self._counter] = self._table_value[self._table_values[0].index('Line')]
+            # self._df['Node'][self._counter] = self._table_value[self._table_values[0].index('Node')]
+            # self._df['ST'][self._counter] = self._table_value[self._table_values[0].index('ST')]
+            # self._df['Maq'][self._counter] = self._table_value[self._table_values[0].index('Maq')]
+            # self._df['Plant'][self._counter] = self._table_value[self._table_values[0].index('Plant')]
+            # self._df['C_Good'][self._counter] = self._table_value[self._table_values[0].index('C_Good')]
+            # self._df['TCData'][self._counter] = self._table_value[self._table_values[0].index('TCData')]
+            # self._df['TCDataAll'][self._counter] = self._table_value[self._table_values[0].index('TCDataAll')]
+            # self._df['Model'][self._counter] = self._table_value[self._table_values[0].index('Model')]
+
+            #self._df['Node'][self._counter] = self._table_value[11]
+            #self._df['Coletor'][self._counter] = self._COLETOR_NAME
+            #self._df['Send'][self._counter] = -1
+            self._df.to_excel(path.excel_path, index = False)
+        except:
+            raise TypeError('It was not possible to save the collected data. Check if worksheet "recover_data.xmls" exists')
+
+

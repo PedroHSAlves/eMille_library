@@ -1,7 +1,7 @@
 from selenium import webdriver
 import warnings
 import time
-from  __remove_CT import __remove_ct
+from __remove_CT import remove_ct
 import paths as path
 
 warnings.filterwarnings("ignore",category=DeprecationWarning)
@@ -13,6 +13,8 @@ class eMille():
 
         Warnings:
         * By defauld, if a user_name and/or a password are not enterd, the authentication.txt file will be consulted.
+
+        Made by Pedro Henrique
         """
 
         self._user_name = user_name
@@ -58,8 +60,8 @@ class eMille():
             raise TypeError('invalid password')
     
     def remove_cycle_time_tags(self,coletor_name,mttq_topic,config_name,backup = True):
-
-        __remove_ct(self._driver,coletor_name,mttq_topic,config_name,backup)
+        
+        remove_ct(self._driver,coletor_name,mttq_topic,config_name,backup)
 
 
     def remove_cylinder_tags(self):
@@ -75,4 +77,4 @@ class eMille():
 #Test area
 
 eM = eMille()
-eM.remove_cycle_time_tags(coletor_name= "", mttq_topic="",config_name="")
+eM.remove_cycle_time_tags(coletor_name= "BET_BIW_PORTAANTERIOR_PREP_281X1H", mttq_topic="",config_name="")
