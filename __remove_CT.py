@@ -71,16 +71,17 @@ class remove_ct():
                 element = self._driver.find_element_by_css_selector("td > button.MuiButtonBase-root.MuiIconButton-root")
                 self._action.move_to_element(element).click().perform()
                 time.sleep(2) #website response time
-
-                if self._backup:
-                    self.__recover_data()
-                else:
-                    self.__remove_element()
-                
-                self._counter += 1
-                self.__len_tags
             except:
-                 warn(f'Error expanding line information {self._counter}')
+                  warn(f'Error expanding line information {self._counter}')
+
+            if self._backup:
+                self.__recover_data()
+            else:
+                self.__remove_element()
+            
+            self._counter += 1
+            self.__len_tags
+
         
         self.__len_tags
 
@@ -98,7 +99,9 @@ class remove_ct():
         remove the element
         """
         try:
+            element = self._driver.find_element_by_xpath("/html/body/div[1]/div/main/div[2]/div/form/button")
             element = self._driver.find_element_by_class_name("button#button-edit") 
+            self._action.move_to_element(element).click().perform()
             element[0].click()
             time.sleep(1) #website response time
 
@@ -107,6 +110,7 @@ class remove_ct():
 
             print("\n Item successfully removed")
         except:
+            self._counter -= 1
             warn('Error removing item')
         
         time.sleep(1) #website response time
@@ -116,7 +120,11 @@ class remove_ct():
         time.sleep(5) #website response time
 
     def __recover_data(self):
-        self._df = pd.read_excel(path.excel_path)
+        try:
+            self._df = pd.read_excel(path.excel_path)
+        except:
+           raise SyntaxError('It was not possible to save the collected data. Check if worksheet "recover_data.xmls" exists')
+
 
         index = 0
         counter = 1
@@ -195,28 +203,10 @@ class remove_ct():
                     self._table_values[2].append(self._table_values[1][index])                                                                                     
 
             self._df.loc[len(self._df)] = self._table_values[2]
-            print(self._df)
-
-            # self._table_values[1].append("name")
-            # self._table_values[1].append(-1)
-            # self._df.loc[len(self._df)] = self._table_value
-            # print(self._df)
-            # self._df['Shop'][self._counter] = self._table_value[self._table_values[0].index('Shop')]
-            # self._df['Line'][self._counter] = self._table_value[self._table_values[0].index('Line')]
-            # self._df['Node'][self._counter] = self._table_value[self._table_values[0].index('Node')]
-            # self._df['ST'][self._counter] = self._table_value[self._table_values[0].index('ST')]
-            # self._df['Maq'][self._counter] = self._table_value[self._table_values[0].index('Maq')]
-            # self._df['Plant'][self._counter] = self._table_value[self._table_values[0].index('Plant')]
-            # self._df['C_Good'][self._counter] = self._table_value[self._table_values[0].index('C_Good')]
-            # self._df['TCData'][self._counter] = self._table_value[self._table_values[0].index('TCData')]
-            # self._df['TCDataAll'][self._counter] = self._table_value[self._table_values[0].index('TCDataAll')]
-            # self._df['Model'][self._counter] = self._table_value[self._table_values[0].index('Model')]
-
-            #self._df['Node'][self._counter] = self._table_value[11]
-            #self._df['Coletor'][self._counter] = self._COLETOR_NAME
-            #self._df['Send'][self._counter] = -1
+            
             self._df.to_excel(path.excel_path, index = False)
         except:
-            raise TypeError('It was not possible to save the collected data. Check if worksheet "recover_data.xmls" exists')
+            raise TypeError('It was not possible to save the collected data. check that the column names are correct')
+            
 
 

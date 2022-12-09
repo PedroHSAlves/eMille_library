@@ -77,4 +77,4 @@ class eMille():
 #Test area
 
 eM = eMille()
-eM.remove_cycle_time_tags(coletor_name= "BET_BIW_PORTAANTERIOR_PREP_281X1H", mttq_topic="",config_name="")
+eM.remove_cycle_time_tags(coletor_name= "BET_BIW_PORTAANTERIOR_PREP_281X1H", mttq_topic="",config_name="", backup= False)
