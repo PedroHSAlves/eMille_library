@@ -99,16 +99,13 @@ class remove_ct():
         remove the element
         """
         try:
-            element = self._driver.find_element_by_xpath("/html/body/div[1]/div/main/div[2]/div/form/button")
-            element = self._driver.find_element_by_class_name("button#button-edit") 
+            element = self._driver.find_element_by_xpath("/html/body/div[1]/div/main/div[3]/div/div[2]/div/div/div/div/div/div/table/tbody/tr[1]/td[9]/div/button")
             self._action.move_to_element(element).click().perform()
-            element[0].click()
             time.sleep(1) #website response time
 
             remove_button = self._driver.find_elements_by_css_selector("span.MuiTypography-root.MuiListItemText-primary.MuiTypography-body1.MuiTypography-displayBlock")
             self._action.move_to_element(remove_button[2]).click().perform()
 
-            print("\n Item successfully removed")
         except:
             self._counter -= 1
             warn('Error removing item')
