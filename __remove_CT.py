@@ -56,14 +56,12 @@ class remove_ct():
         element = self._driver.find_elements_by_css_selector("td > button.MuiButtonBase-root.MuiIconButton-root")
         self._quantity_tags = len(element)
 
-        # print(element, end="\n\n")
-        # print(type(element))
-        # print(len(element))
         print(f"\nThere are {self._quantity_tags} data to be excluded")
         print(f"Have already been excluded {self._counter}")
 
     def __main(self):
         """
+        Processes and redirects data according to input.
         """
 
         while self._quantity_tags > 0:
@@ -118,7 +116,7 @@ class remove_ct():
 
     def __recover_data(self):
         try:
-            self._df = pd.read_excel(path.excel_path)
+            self._df = pd.read_excel(path.excel_backup_path)
         except:
            raise SyntaxError('It was not possible to save the collected data. Check if worksheet "recover_data.xmls" exists')
 
@@ -201,7 +199,7 @@ class remove_ct():
 
             self._df.loc[len(self._df)] = self._table_values[2]
             
-            self._df.to_excel(path.excel_path, index = False)
+            self._df.to_excel(path.excel_backup_path, index = False)
         except:
             raise TypeError('It was not possible to save the collected data. check that the column names are correct')
             

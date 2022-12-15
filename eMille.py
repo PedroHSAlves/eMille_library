@@ -2,6 +2,7 @@ from selenium import webdriver
 import warnings
 import time
 from __remove_CT import remove_ct
+from __add_CT import add_CT
 import paths as path
 import ctypes, sys
 
@@ -137,16 +138,17 @@ class eMille():
             self._driver.close()
             raise TypeError('invalid password')
     
-    def remove_cycle_time_tags(self,coletor_name: str,mttq_topic: str,config_name: str,backup = True):
+    def remove_cycle_time_tags(self,coletor_name: str,config_name: str,mttq_topic: str,backup = True):
         """
         Removes cycle time tags.\n
         By default the registration backup is enabled.\n
         For safety, you must pass all three filter parameters for tag removal.
         """
-        if coletor_name == "" or mttq_topic == "":
+        if coletor_name == "" or config_name == "":
             if self.__is_admin():
                 remove_ct(self._driver,coletor_name,mttq_topic,config_name,backup)
             else:
+                self._driver.close()
                 print("\nThis removal is HIGH RISK, and requires administrator privileges...")
                 print("Within 10 secondes you will be redirected to the credentials screen.")
 
@@ -163,7 +165,7 @@ class eMille():
     def remove_cylinder_tags(self):
         pass
     def add_cycle_time_tags(self):
-        pass
+        add_CT(self._driver)
     def add_cylinder_tags_old_version(self):
         pass
     def add_cylinder_tags_new_version(self):
@@ -173,8 +175,11 @@ class eMille():
 
 #Test area
 
-#eM = eMille()
-#eM.remove_cycle_time_tags(coletor_name= "BET_BIW_PORTAANTERIOR_PREP_281X1H", mttq_topic="",config_name="")
+eM = eMille()
+eM.add_cycle_time_tags()
+eM = eMille()
+eM.remove_cycle_time_tags(coletor_name= "BET_BIW_PORTAANTERIOR_PREP_281X1H",config_name="OperationCycle", mttq_topic="",backup=False)
+
 
 
 
